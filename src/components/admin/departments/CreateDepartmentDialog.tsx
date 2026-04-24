@@ -30,6 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { departmentService } from "@/services/department";
 
 const formSchema = z.object({
   name: z.string().min(2, "Department name must be at least 2 characters"),
@@ -84,24 +85,12 @@ export function CreateDepartmentDialog({ open, onOpenChange }: CreateDepartmentD
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError || !userData.user) {
-        toast.error("You must be signed in to create a department");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("departments")
-        .insert({ ...values, created_by: userData.user.id });
-
-      if (error) {
-        toast.error(error.message || "Failed to create department");
-        return;
-      }
-
+      await departmentService.createDepartment(values);
       toast.success("Department created successfully");
       form.reset();
       onOpenChange(false);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create department");
     } finally {
       setIsLoading(false);
     }

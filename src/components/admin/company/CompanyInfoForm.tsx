@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { companyService } from "@/services/company";
 
 const formSchema = z.object({
   name: z.string().min(2, "Company name must be at least 2 characters"),
@@ -35,11 +36,10 @@ export function CompanyInfoForm() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log("Form values:", values);
-      // TODO: Implement API call to save company information
+      await companyService.updateCompanyInfo(values);
       toast.success("Company information updated successfully");
-    } catch (error) {
-      toast.error("Failed to update company information");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update company information");
     }
   };
 

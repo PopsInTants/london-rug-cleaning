@@ -1,7 +1,6 @@
-
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LocationForm } from "./LocationForm";
-import { supabase } from "@/integrations/supabase/client";
+import { companyService } from "@/services/company";
 import { toast } from "sonner";
 
 interface CreateLocationDialogProps {
@@ -10,24 +9,14 @@ interface CreateLocationDialogProps {
 }
 
 export function CreateLocationDialog({ open, onOpenChange }: CreateLocationDialogProps) {
-  const handleSubmit = async (values: any) => {
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData.user) {
-      toast.error("You must be signed in to create a location");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("locations")
-      .insert({ ...values, created_by: userData.user.id });
-
-    if (error) {
+  const handleSubmit = async (values: unknown) => {
+    try {
+      await companyService.postLocation(values);
+      toast.success("Location created successfully");
+      onOpenChange(false);
+    } catch (error: any) {
       toast.error(error.message || "Failed to create location");
-      return;
     }
-
-    toast.success("Location created successfully");
-    onOpenChange(false);
   };
 
   return (

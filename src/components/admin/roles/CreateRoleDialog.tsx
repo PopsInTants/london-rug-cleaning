@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { roleService } from "@/services/role";
 
 const formSchema = z.object({
   name: z.string().min(1, "Role name is required"),
@@ -47,24 +47,12 @@ export function CreateRoleDialog({ open, onOpenChange }: CreateRoleDialogProps) 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true);
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError || !userData.user) {
-        toast.error("You must be signed in to create a role");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("roles")
-        .insert({ ...values, created_by: userData.user.id });
-
-      if (error) {
-        toast.error(error.message || "Failed to create role");
-        return;
-      }
-
+      await roleService.createRole(values);
       toast.success("Role created successfully");
       form.reset();
       onOpenChange(false);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create role");
     } finally {
       setIsLoading(false);
     }

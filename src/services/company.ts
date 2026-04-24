@@ -1,209 +1,97 @@
-import axios from "axios";
+import * as z from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
-const API_URL = 'http://16.171.11.180';
+const locationSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  code: z.string().min(2, "Code must be at least 2 characters"),
+  type: z.string().min(1, "Type is required"),
+  country: z.string().min(1, "Country is required"),
+  city: z.string().min(1, "City is required"),
+  address: z.string().min(5, "Address must be at least 5 characters"),
+});
 
-interface CompanyDto{
-    name: string;
-    legal_name:	string;
-    tax_id:	string;
-    email:string;
-    phone:string;
-    website:string;
-    address: string;
-}
+const locationIdSchema = z.string().uuid("Invalid location ID");
 
-interface CompanyResponse{
-    id: string;
-    name: string;
-    legal_name:	string;
-    tax_id:	string;
-    email:string;
-    phone:string;
-    website:string;
-    address: string;
-    created_at: string;
-}
+const companyInfoSchema = z.object({
+  name: z.string().min(2, "Company name must be at least 2 characters"),
+  legalName: z.string().min(2, "Legal name must be at least 2 characters"),
+  taxId: z.string().min(2, "Tax ID is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(6, "Phone number is required"),
+  website: z.string().url("Invalid website URL").optional().or(z.literal("")),
+  address: z.string().min(5, "Address must be at least 5 characters"),
+});
+
+export type LocationInput = z.infer<typeof locationSchema>;
+export type CompanyInfoInput = z.infer<typeof companyInfoSchema>;
 
 export const companyService = {
-    async postCompany(data: unknown): Promise<CompanyResponse>{
-        const token = localStorage.getItem("token");
-        console.log("this is token", token)
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.post(`${API_URL}/company/`, data, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
+  async postLocation(data: unknown) {
+    const parsed = locationSchema.parse(data);
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: result, error } = await supabase
+      .from("locations")
+      .insert({ ...parsed, created_by: user?.id })
+      .select("id, name, code, type, country, city, address, status")
+      .single();
+    if (error) throw new Error(error.message);
+    return result;
+  },
 
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-    async putCompany(data: unknown): Promise<CompanyResponse>{
-        const token = localStorage.getItem("token");
-        const companyId = localStorage.getItem("userData")
-        console.log("this is token", token)
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.put(`${API_URL}/company/${companyId}/`, data, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
+  async getLocation() {
+    const { data, error } = await supabase
+      .from("locations")
+      .select("id, name, code, type, country, city, address, status")
+      .order("name", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data;
+  },
 
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-    async getCompany(): Promise<CompanyResponse>{
-        const token = localStorage.getItem("token");
-        const companyId = localStorage.getItem("userData")
-        console.log("this is token", companyId)
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.get(`${API_URL}/company/${companyId}/`, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
+  async getSingleLocation(id: unknown) {
+    const validId = locationIdSchema.parse(id);
+    const { data, error } = await supabase
+      .from("locations")
+      .select("id, name, code, type, country, city, address, status")
+      .eq("id", validId)
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
 
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-    async Company(): Promise<CompanyResponse>{
-        const token = localStorage.getItem("token");
-        const companyId = localStorage.getItem("userData")
-        console.log("this is token", companyId)
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.get(`${API_URL}/company/${companyId}/`, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
+  async putSingleLocation(data: unknown, id: unknown) {
+    const parsed = locationSchema.parse(data);
+    const validId = locationIdSchema.parse(id);
+    const { data: result, error } = await supabase
+      .from("locations")
+      .update(parsed)
+      .eq("id", validId)
+      .select("id, name, code, type, country, city, address, status")
+      .single();
+    if (error) throw new Error(error.message);
+    return result;
+  },
 
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-    async postLocation(data: unknown): Promise<any>{
-        
-        const token = localStorage.getItem("token");
-        const companyId = localStorage.getItem("userData")
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.post(`${API_URL}/company/${companyId}/location/`, data, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
+  async updateCompanyInfo(data: unknown) {
+    const parsed = companyInfoSchema.parse(data);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
 
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-    async getLocation(): Promise<any>{
-        const token = localStorage.getItem("token");
-        const companyId = localStorage.getItem("userData")
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.get(`${API_URL}/company/${companyId}/location/`, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
+    const payload = {
+      name: parsed.name,
+      legal_name: parsed.legalName,
+      tax_id: parsed.taxId,
+      email: parsed.email,
+      phone: parsed.phone,
+      website: parsed.website || null,
+      address: parsed.address,
+    };
 
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-    async getSingleLocation(id: unknown): Promise<any>{
-        const token = localStorage.getItem("token");
-        const companyId = localStorage.getItem("userData")
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.get(`${API_URL}/company/${companyId}/location/${id}/`, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
-
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-    async putSingleLocation(data: unknown, id: unknown): Promise<any>{
-        const token = localStorage.getItem("token");
-        const companyId = localStorage.getItem("userData")
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.put(`${API_URL}/company/${companyId}/location/${id}/`, data, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
-
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-    
-}
+    const { data: result, error } = await supabase
+      .from("companies")
+      .upsert({ ...payload, updated_by: user.id })
+      .select("id, name, legal_name, tax_id, email, phone, website, address")
+      .single();
+    if (error) throw new Error(error.message);
+    return result;
+  },
+};

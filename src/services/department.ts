@@ -1,51 +1,34 @@
-import axios from "axios";
+import * as z from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
-const API_URL = 'http://16.171.11.180';
+const departmentSchema = z.object({
+  name: z.string().min(2, "Department name must be at least 2 characters"),
+  description: z.string().optional(),
+  managerId: z.string().optional(),
+});
+
+export type DepartmentInput = z.infer<typeof departmentSchema>;
 
 export const departmentService = {
-    async postDepartment(data: unknown): Promise<unknown>{
-        const token = localStorage.getItem("token");
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.post(`${API_URL}/user/departments/`, data, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
+  async createDepartment(data: unknown) {
+    const parsed = departmentSchema.parse(data);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
+    const { data: result, error } = await supabase
+      .from("departments")
+      .insert({ ...parsed, created_by: user.id })
+      .select("id, name, description, managerId")
+      .single();
+    if (error) throw new Error(error.message);
+    return result;
+  },
 
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-    async getDepartment(): Promise<unknown>{
-        const token = localStorage.getItem("token");
-        const companyId = localStorage.getItem("userData")
-        console.log("this is token", companyId)
-        try{
-            const headers = {
-                "Content-Type": "application/json",
-                authorization: `Bearer ${token}`,
-              };
-            const response = await axios.get(`${API_URL}/user/departments/`, { headers: headers });
-            return response.data;
-        }catch(error: any){
-            console.log('Signup Error Response:', error.response?.data);
-
-            if (error.response?.data) {
-                const errorMessages = Object.entries(error.response.data)
-                    .map(([field, messages]) => `${field}: ${messages}`)
-                    .join('\n');
-                throw new Error(errorMessages);
-            }
-            throw error;
-        }
-    },
-
-}
+  async getDepartments() {
+    const { data, error } = await supabase
+      .from("departments")
+      .select("id, name, description")
+      .order("name", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+};
