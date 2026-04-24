@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -42,8 +42,35 @@ interface CreateDepartmentDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface ManagerOption {
+  id: string;
+  name: string;
+}
+
 export function CreateDepartmentDialog({ open, onOpenChange }: CreateDepartmentDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [managers, setManagers] = useState<ManagerOption[]>([]);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .order("full_name", { ascending: true })
+      .then(({ data, error }) => {
+        if (cancelled || error || !data) return;
+        setManagers(
+          data.map((row: any) => ({
+            id: row.id,
+            name: row.full_name || row.email || row.id,
+          }))
+        );
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -134,8 +161,17 @@ export function CreateDepartmentDialog({ open, onOpenChange }: CreateDepartmentD
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="1">John Doe</SelectItem>
-                      <SelectItem value="2">Jane Smith</SelectItem>
+                      {managers.length === 0 ? (
+                        <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                          No users available
+                        </div>
+                      ) : (
+                        managers.map((m) => (
+                          <SelectItem key={m.id} value={m.id}>
+                            {m.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />

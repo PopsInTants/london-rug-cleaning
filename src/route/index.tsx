@@ -40,7 +40,7 @@ const ERPIntegration = lazy(() => import("@/pages/finance/ERPIntegration"));
 const ImpairmentRevaluation = lazy(() => import("@/pages/finance/ImpairmentRevaluation"));
 
 import { TooltipProvider } from "@/components/ui/tooltip";
-import ProtectedRoute from "./ProtectedRoute";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import GuestGuard from "./GuestRoute";
 
 const PageFallback = () => (
