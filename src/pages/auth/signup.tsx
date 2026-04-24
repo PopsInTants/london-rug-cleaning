@@ -35,7 +35,11 @@ const Signup = () => {
     setIsLoading(false);
 
     if (error) {
-      toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
+      toast({
+        title: "Sign up failed",
+        description: "Unable to create account. Please try a different email or log in.",
+        variant: "destructive",
+      });
       return;
     }
 

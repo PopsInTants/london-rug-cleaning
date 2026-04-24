@@ -19,20 +19,15 @@ const Reset = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/login`,
     });
 
     setIsLoading(false);
 
-    if (error) {
-      toast({ title: "Reset failed", description: error.message, variant: "destructive" });
-      return;
-    }
-
     toast({
       title: "Check your email",
-      description: "We sent a password reset link to your inbox.",
+      description: "If an account exists for this email, a reset link has been sent.",
     });
   };
 
