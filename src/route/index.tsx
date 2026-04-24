@@ -4,6 +4,7 @@ import { DefaultLayout } from "@/components/layout/DefaultLayout";
 import NotFound from "@/pages/NotFound";
 import Login from "@/pages/auth/login";
 import Signup from "@/pages/auth/signup";
+import Reset from "@/pages/auth/reset";
 
 import Profile from "@/pages/Profile";
 import Dashboard from "@/pages/Dashboard";
@@ -232,6 +233,10 @@ export const Router = createBrowserRouter([
       {
         path: "signup",
         element: <Signup />,
+      },
+      {
+        path: "reset",
+        element: <Reset />,
       },
     ],
   },
