@@ -16,7 +16,7 @@ export default function PurchaseOrders() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('purchase_orders')
-        .select('*')
+        .select('id, po_number, po_date, supplier_name, status, total_amount, created_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;

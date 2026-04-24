@@ -21,16 +21,19 @@ export default function PurchaseOrderDetail() {
       // Fetch the purchase order
       const { data: po, error: poError } = await supabase
         .from('purchase_orders')
-        .select('*')
+        .select(`
+          id, po_number, po_date, supplier_name, status, total_amount,
+          payment_terms, delivery_address, created_by_name, created_at
+        `)
         .eq('id', id)
         .single();
-      
+
       if (poError) throw poError;
-      
+
       // Fetch the purchase order items
       const { data: items, error: itemsError } = await supabase
         .from('purchase_order_items')
-        .select('*')
+        .select('id, po_id, item_number, name, description, unit_of_measure, quantity, unit_price, total_price, remarks')
         .eq('po_id', id);
       
       if (itemsError) throw itemsError;

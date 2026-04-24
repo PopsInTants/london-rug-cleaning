@@ -31,34 +31,26 @@ export function RequestList({
   const { data, isLoading } = useQuery({
     queryKey: ['requests', status, grnStatus, filterByCurrentUser],
     queryFn: async () => {
-      const baseQuery = supabase.from('requests').select();
+      const COLUMNS = `
+        id, title, status, created_at, created_by,
+        grn_status, current_approval_step, total_approval_steps,
+        workflow_status, approver_role,
+        creator:profiles!created_by(name, department)
+      `;
 
-      let finalQuery = baseQuery;
-      
-      // Apply status and GRN status filters if provided
-      if (status && grnStatus) {
-        const { data, error } = await baseQuery
-          .eq('status', status)
-          .eq('grn_status', grnStatus);
-        if (error) throw error;
-        return data;
-      } else if (status) {
-        const { data, error } = await baseQuery
-          .eq('status', status);
-        if (error) throw error;
-        return data;
-      }
+      let query = supabase.from('requests').select(COLUMNS);
 
-      // Apply user filter if needed
+      if (status) query = query.eq('status', status);
+      if (status && grnStatus) query = query.eq('grn_status', grnStatus);
+
       if (filterByCurrentUser) {
-        const { data, error } = await baseQuery
-          .eq('created_by', 'current-user-id'); // In real app, this would be auth.uid()
-        if (error) throw error;
-        return data;
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) query = query.eq('created_by', user.id);
       }
 
-      // If no filters, return all requests
-      const { data, error } = await baseQuery;
+      query = query.order('created_at', { ascending: false });
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     }

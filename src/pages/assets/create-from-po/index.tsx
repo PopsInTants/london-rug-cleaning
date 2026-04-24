@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -57,10 +57,21 @@ export default function CreateAssetFromPO() {
   const [assetData, setAssetData] = useState<any>(null);
   const [creatingAsset, setCreatingAsset] = useState(false);
 
-  const { data: purchaseOrders } = supabase.from('purchase_orders').select('*');
+  const [purchaseOrders, setPurchaseOrders] = useState<any[]>([]);
 
-  // Filter to only show approved purchase orders
-  const approvedPOs = purchaseOrders?.filter(po => po.status === "APPROVED") || [];
+  useEffect(() => {
+    supabase
+      .from('purchase_orders')
+      .select('id, po_number, supplier_name, status, total_amount, po_date')
+      .eq('status', 'APPROVED')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (data) setPurchaseOrders(data);
+      });
+  }, []);
+
+  // purchaseOrders is already filtered to APPROVED on fetch
+  const approvedPOs = purchaseOrders;
   
   const filteredPOs = approvedPOs.filter(po => 
     po.po_number.toLowerCase().includes(searchQuery.toLowerCase()) ||

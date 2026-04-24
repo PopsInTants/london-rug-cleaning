@@ -18,10 +18,7 @@ export default function GRNListPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('goods_receipt_notes')
-        .select(`
-          *,
-          items:grn_items(*)
-        `)
+        .select('id, purchase_order_id, received_date, supplier_name, status, total_value, total_items, created_at, grn_number')
         .order('created_at', { ascending: false });
 
       if (error) throw error;

@@ -107,7 +107,7 @@ export default function GRNCreate() {
     try {
       const { data, error } = await supabase
         .from('requests')
-        .select('*')
+        .select('id, title, description, asset_category, quantity, unit_cost, status, created_by, created_at')
         .eq('status', 'APPROVED')
         .eq('grn_status', 'PENDING');
 
