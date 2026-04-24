@@ -1,10 +1,8 @@
-
+// Role IDs must match the user_role enum in the database: "ADMIN" | "FINANCE" | "EMPLOYEE"
 export const roles = [
-  { id: "admin", name: "Admin" },
-  { id: "finance_manager", name: "Finance Manager" },
-  { id: "procurement_manager", name: "Procurement Manager" },
-  { id: "asset_manager", name: "Asset Manager" },
-  { id: "user", name: "Regular User" },
+  { id: "ADMIN", name: "Admin" },
+  { id: "FINANCE", name: "Finance" },
+  { id: "EMPLOYEE", name: "Employee" },
 ];
 
 export const departments = [
