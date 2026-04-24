@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { AuthLayout } from "@/route/AuthLayout";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { AUTH_ERRORS } from "@/config/constants";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -28,7 +29,7 @@ const Login = () => {
     if (error) {
       toast({
         title: "Login Failed",
-        description: "Invalid email or password.",
+        description: AUTH_ERRORS.LOGIN_FAILED,
         variant: "destructive",
       });
       return;

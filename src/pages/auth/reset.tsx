@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { AuthLayout } from "@/route/AuthLayout";
 import { Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { AUTH_ERRORS } from "@/config/constants";
 
 const Reset = () => {
   const [email, setEmail] = useState("");
@@ -27,7 +28,7 @@ const Reset = () => {
 
     toast({
       title: "Check your email",
-      description: "If an account exists for this email, a reset link has been sent.",
+      description: AUTH_ERRORS.RESET_SENT,
     });
   };
 

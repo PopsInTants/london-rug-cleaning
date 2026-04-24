@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { AuthLayout } from "@/route/AuthLayout";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { AUTH_ERRORS } from "@/config/constants";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ const Signup = () => {
     if (password !== confirmPassword) {
       toast({
         title: "Passwords don't match",
-        description: "Please make sure your passwords match.",
+        description: AUTH_ERRORS.PASSWORDS_NO_MATCH,
         variant: "destructive",
       });
       return;
@@ -37,7 +38,7 @@ const Signup = () => {
     if (error) {
       toast({
         title: "Sign up failed",
-        description: "Unable to create account. Please try a different email or log in.",
+        description: AUTH_ERRORS.SIGNUP_FAILED,
         variant: "destructive",
       });
       return;
