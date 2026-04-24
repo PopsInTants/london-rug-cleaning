@@ -44,6 +44,9 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
             alt="Dashboard visualization"
             className="w-full h-full object-cover"
+            loading="lazy"
+            width={2070}
+            height={1380}
           />
           <div className="absolute inset-0 bg-brand-600/40 backdrop-blur-sm"></div>
         </motion.div>

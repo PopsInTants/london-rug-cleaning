@@ -18,6 +18,10 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
+// NOTE: When this is wired to real data, fetch only the current page of
+// records from the backend (e.g. Supabase .range(from, to) based on
+// currentPage and ITEMS_PER_PAGE), plus a separate count query for totalPages.
+// Do not load all rows client-side.
 const mockLocations = Array(150).fill(null).map((_, index) => ({
   id: `${index + 1}`,
   name: `Location ${index + 1}`,

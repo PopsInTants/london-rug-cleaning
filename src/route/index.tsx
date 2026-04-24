@@ -1,46 +1,57 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import { DefaultLayout } from "@/components/layout/DefaultLayout";
 
-import NotFound from "@/pages/NotFound";
-import Login from "@/pages/auth/login";
-import Signup from "@/pages/auth/signup";
-import Reset from "@/pages/auth/reset";
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const Login = lazy(() => import("@/pages/auth/login"));
+const Signup = lazy(() => import("@/pages/auth/signup"));
+const Reset = lazy(() => import("@/pages/auth/reset"));
 
-import Profile from "@/pages/Profile";
-import Dashboard from "@/pages/Dashboard";
-import Assets from "@/pages/assets";
-import AssetDetails from "@/pages/assets/[id]";
-import CreateAssetFromPO from "@/pages/assets/create-from-po";
-import GRNList from "@/pages/grn";
-import GRNCreate from "@/pages/grn/GRNCreate";
-import GRNDetail from "@/pages/grn/GRNDetail";
-import Maintenance from "@/pages/maintenance";
-import PurchaseOrders from "@/pages/purchase-orders";
-import PurchaseOrderDetail from "@/pages/purchase-orders/[id]";
-import Requests from "@/pages/requests";
-import RequestDetail from "@/pages/requests/[id]";
-import RequestApprovals from "@/pages/requests/approvals";
-import RequestDelivery from "@/pages/requests/delivery";
-import AdminCompany from "@/pages/admin/company";
-import AdminDepartments from "@/pages/admin/departments";
-import AdminIntegrations from "@/pages/admin/integrations";
-import AdminLocations from "@/pages/admin/locations";
-import AdminRoles from "@/pages/admin/roles";
-import AdminUsers from "@/pages/admin/users";
-import AdminWorkflow from "@/pages/admin/workflow";
-import AdminAuditLogs from "@/pages/admin/audit-logs";
-import ItemMasterPage from "@/pages/admin/item-master";
-import Vendors from "@/pages/vendors";
-import Reports from "@/pages/reports";
-import FinanceSetup from "@/pages/finance";
-import DepreciationSchedule from "@/pages/finance/DepreciationSchedule";
-import DepreciationSetup from "@/pages/finance/DepreciationSetup";
-import ERPIntegration from "@/pages/finance/ERPIntegration";
-import ImpairmentRevaluation from "@/pages/finance/ImpairmentRevaluation";
+const Profile = lazy(() => import("@/pages/Profile"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Assets = lazy(() => import("@/pages/assets"));
+const AssetDetails = lazy(() => import("@/pages/assets/[id]"));
+const CreateAssetFromPO = lazy(() => import("@/pages/assets/create-from-po"));
+const GRNList = lazy(() => import("@/pages/grn"));
+const GRNCreate = lazy(() => import("@/pages/grn/GRNCreate"));
+const GRNDetail = lazy(() => import("@/pages/grn/GRNDetail"));
+const Maintenance = lazy(() => import("@/pages/maintenance"));
+const PurchaseOrders = lazy(() => import("@/pages/purchase-orders"));
+const PurchaseOrderDetail = lazy(() => import("@/pages/purchase-orders/[id]"));
+const Requests = lazy(() => import("@/pages/requests"));
+const RequestDetail = lazy(() => import("@/pages/requests/[id]"));
+const RequestApprovals = lazy(() => import("@/pages/requests/approvals"));
+const RequestDelivery = lazy(() => import("@/pages/requests/delivery"));
+const AdminCompany = lazy(() => import("@/pages/admin/company"));
+const AdminDepartments = lazy(() => import("@/pages/admin/departments"));
+const AdminIntegrations = lazy(() => import("@/pages/admin/integrations"));
+const AdminLocations = lazy(() => import("@/pages/admin/locations"));
+const AdminRoles = lazy(() => import("@/pages/admin/roles"));
+const AdminUsers = lazy(() => import("@/pages/admin/users"));
+const AdminWorkflow = lazy(() => import("@/pages/admin/workflow"));
+const AdminAuditLogs = lazy(() => import("@/pages/admin/audit-logs"));
+const ItemMasterPage = lazy(() => import("@/pages/admin/item-master"));
+const Vendors = lazy(() => import("@/pages/vendors"));
+const Reports = lazy(() => import("@/pages/reports"));
+const FinanceSetup = lazy(() => import("@/pages/finance"));
+const DepreciationSchedule = lazy(() => import("@/pages/finance/DepreciationSchedule"));
+const DepreciationSetup = lazy(() => import("@/pages/finance/DepreciationSetup"));
+const ERPIntegration = lazy(() => import("@/pages/finance/ERPIntegration"));
+const ImpairmentRevaluation = lazy(() => import("@/pages/finance/ImpairmentRevaluation"));
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ProtectedRoute from "./ProtectedRoute";
 import GuestGuard from "./GuestRoute";
+
+const PageFallback = () => (
+  <div className="flex items-center justify-center min-h-[50vh] text-sm text-muted-foreground">
+    Loading...
+  </div>
+);
+
+const withSuspense = (node: React.ReactNode) => (
+  <Suspense fallback={<PageFallback />}>{node}</Suspense>
+);
 
 export const Router = createBrowserRouter([
   {
@@ -54,170 +65,48 @@ export const Router = createBrowserRouter([
       </TooltipProvider>
     ),
     children: [
-      {
-        path: "/",
-        element: <Dashboard />,
-      },
-      {
-        path: "/dashboard",
-        element: <Dashboard />,
-      },
-      {
-        path: "/profile",
-        element: <Profile />,
-      },
-      {
-        path: "/assets",
-        element: <Assets />,
-      },
-      {
-        path: "/assets/:id",
-        element: <AssetDetails />,
-      },
-      {
-        path: "/assets/request",
-        element: <Requests />,
-      },
-      {
-        path: "/assets/create-from-po",
-        element: <CreateAssetFromPO />,
-      },
-      {
-        path: "/assets/disposal",
-        element: <Assets />,
-      },
-      {
-        path: "/assets/capitalisation",
-        element: <Assets />,
-      },
-      {
-        path: "/grn",
-        element: <GRNList />,
-      },
-      {
-        path: "/grn/create",
-        element: <GRNCreate />,
-      },
-      {
-        path: "/grn/:id",
-        element: <GRNDetail />,
-      },
-      {
-        path: "/maintenance",
-        element: <Maintenance />,
-      },
-      {
-        path: "/purchase-orders",
-        element: <PurchaseOrders />,
-      },
-      {
-        path: "/purchase-orders/:id",
-        element: <PurchaseOrderDetail />,
-      },
-      {
-        path: "/requests",
-        element: <Requests />,
-      },
-      {
-        path: "/requests/:id",
-        element: <RequestDetail />,
-      },
-      {
-        path: "/requests/approvals",
-        element: <RequestApprovals />,
-      },
-      {
-        path: "/requests/delivery",
-        element: <RequestDelivery />,
-      },
-      {
-        path: "/admin/company",
-        element: <AdminCompany />,
-      },
-      {
-        path: "/admin/departments",
-        element: <AdminDepartments />,
-      },
-      {
-        path: "/admin/integrations",
-        element: <AdminIntegrations />,
-      },
-      {
-        path: "/admin/locations",
-        element: <AdminLocations />,
-      },
-      {
-        path: "/admin/item-master",
-        element: <ItemMasterPage />,
-      },
-      {
-        path: "/admin/roles",
-        element: <AdminRoles />,
-      },
-      {
-        path: "/admin/users",
-        element: <AdminUsers />,
-      },
-      {
-        path: "/admin/workflow",
-        element: <AdminWorkflow />,
-      },
-      {
-        path: "/admin/audit-logs",
-        element: <AdminAuditLogs />,
-      },
-      {
-        path: "/vendors",
-        element: <Vendors />,
-      },
-      {
-        path: "/reports",
-        element: <Reports />,
-      },
-      // Finance routes
-      {
-        path: "/finance",
-        element: <FinanceSetup />,
-      },
-      {
-        path: "/finance/depreciation-schedule",
-        element: <DepreciationSchedule />,
-      },
-      {
-        path: "/finance/depreciation-setup",
-        element: <DepreciationSetup />,
-      },
-      {
-        path: "/finance/erp-integration",
-        element: <ERPIntegration />,
-      },
-      {
-        path: "/finance/impairment-revaluation",
-        element: <ImpairmentRevaluation />,
-      },
-      // Admin finance routes (for sidebar navigation compatibility)
-      {
-        path: "/admin/finance",
-        element: <FinanceSetup />,
-      },
-      {
-        path: "/admin/finance/depreciation-setup",
-        element: <DepreciationSetup />,
-      },
-      {
-        path: "/admin/finance/depreciation-schedule",
-        element: <DepreciationSchedule />,
-      },
-      {
-        path: "/admin/finance/impairment-revaluation",
-        element: <ImpairmentRevaluation />,
-      },
-      {
-        path: "/admin/finance/erp-integration",
-        element: <ERPIntegration />,
-      },
+      { path: "/", element: withSuspense(<Dashboard />) },
+      { path: "/dashboard", element: withSuspense(<Dashboard />) },
+      { path: "/profile", element: withSuspense(<Profile />) },
+      { path: "/assets", element: withSuspense(<Assets />) },
+      { path: "/assets/:id", element: withSuspense(<AssetDetails />) },
+      { path: "/assets/request", element: withSuspense(<Requests />) },
+      { path: "/assets/create-from-po", element: withSuspense(<CreateAssetFromPO />) },
+      { path: "/assets/disposal", element: withSuspense(<Assets />) },
+      { path: "/assets/capitalisation", element: withSuspense(<Assets />) },
+      { path: "/grn", element: withSuspense(<GRNList />) },
+      { path: "/grn/create", element: withSuspense(<GRNCreate />) },
+      { path: "/grn/:id", element: withSuspense(<GRNDetail />) },
+      { path: "/maintenance", element: withSuspense(<Maintenance />) },
+      { path: "/purchase-orders", element: withSuspense(<PurchaseOrders />) },
+      { path: "/purchase-orders/:id", element: withSuspense(<PurchaseOrderDetail />) },
+      { path: "/requests", element: withSuspense(<Requests />) },
+      { path: "/requests/:id", element: withSuspense(<RequestDetail />) },
+      { path: "/requests/approvals", element: withSuspense(<RequestApprovals />) },
+      { path: "/requests/delivery", element: withSuspense(<RequestDelivery />) },
+      { path: "/admin/company", element: withSuspense(<AdminCompany />) },
+      { path: "/admin/departments", element: withSuspense(<AdminDepartments />) },
+      { path: "/admin/integrations", element: withSuspense(<AdminIntegrations />) },
+      { path: "/admin/locations", element: withSuspense(<AdminLocations />) },
+      { path: "/admin/item-master", element: withSuspense(<ItemMasterPage />) },
+      { path: "/admin/roles", element: withSuspense(<AdminRoles />) },
+      { path: "/admin/users", element: withSuspense(<AdminUsers />) },
+      { path: "/admin/workflow", element: withSuspense(<AdminWorkflow />) },
+      { path: "/admin/audit-logs", element: withSuspense(<AdminAuditLogs />) },
+      { path: "/vendors", element: withSuspense(<Vendors />) },
+      { path: "/reports", element: withSuspense(<Reports />) },
+      { path: "/finance", element: withSuspense(<FinanceSetup />) },
+      { path: "/finance/depreciation-schedule", element: withSuspense(<DepreciationSchedule />) },
+      { path: "/finance/depreciation-setup", element: withSuspense(<DepreciationSetup />) },
+      { path: "/finance/erp-integration", element: withSuspense(<ERPIntegration />) },
+      { path: "/finance/impairment-revaluation", element: withSuspense(<ImpairmentRevaluation />) },
+      { path: "/admin/finance", element: withSuspense(<FinanceSetup />) },
+      { path: "/admin/finance/depreciation-setup", element: withSuspense(<DepreciationSetup />) },
+      { path: "/admin/finance/depreciation-schedule", element: withSuspense(<DepreciationSchedule />) },
+      { path: "/admin/finance/impairment-revaluation", element: withSuspense(<ImpairmentRevaluation />) },
+      { path: "/admin/finance/erp-integration", element: withSuspense(<ERPIntegration />) },
     ],
-    errorElement: <NotFound />,
+    errorElement: withSuspense(<NotFound />),
   },
   {
     element: (
@@ -226,18 +115,9 @@ export const Router = createBrowserRouter([
       </GuestGuard>
     ),
     children: [
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "signup",
-        element: <Signup />,
-      },
-      {
-        path: "reset",
-        element: <Reset />,
-      },
+      { path: "login", element: withSuspense(<Login />) },
+      { path: "signup", element: withSuspense(<Signup />) },
+      { path: "reset", element: withSuspense(<Reset />) },
     ],
   },
 ]);

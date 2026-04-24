@@ -399,7 +399,7 @@ export function ApprovalDashboard() {
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
-                <img src="/placeholder.svg" className="w-32 h-32 opacity-20 mb-4" alt="Select a request" />
+                <img src="/placeholder.svg" className="w-32 h-32 opacity-20 mb-4" alt="Select a request" loading="lazy" width={128} height={128} />
                 <p>Select a request to view details and take action</p>
               </div>
             )}
